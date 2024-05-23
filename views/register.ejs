@@ -1,0 +1,39 @@
+<%- include('partials/header') %>
+  <div class="container mt-5">
+    <h1>Register</h1>
+
+    <div class="row">
+      <div class="col-sm-8">
+        <div class="card">
+          <div class="card-body">
+
+            <!-- Makes POST request to /register route -->
+            <form action="/register" method="POST">
+              <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" name="username" required>
+              </div>
+              <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" name="password" required>
+              </div>
+
+              <div class="form-group">
+                <label for="plotSize">Plot Size</label>
+                <select class="form-control" name="plotSize" required>
+                  <option value="smallPlot">Small Plot (50 sq.m.)</option>
+                  <option value="mediumPlot">Medium Plot (100 sq.m.)</option>
+                  <option value="largePlot">Large Plot (150 sq.m.)</option>
+                </select>
+
+              <button type="submit" class="btn btn-dark">Register</button>
+            </form>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+<%- include('partials/footer') %>

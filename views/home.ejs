@@ -1,0 +1,79 @@
+<%- include('partials/header') %>
+
+
+  <div class="jumbotron centered">
+    <div class="container py-3 text-center">
+      <h1 class="display-3">HavestHub</h1>
+      <p class="lead">Your gateway to community gardening! Sign up for an allotment plot, check availability, and easily track your spot on the waiting list. As a gardener, you’ll love the simplicity and transparency. For administrators, managing plot registrations, assignments, and waiting lists has never been easier. Join HarvestHub today and start cultivating your green space!</p>
+      <hr>
+      <a class="btn btn-light btn-lg" href="/register" role="button">Register</a>
+      <a class="btn btn-dark btn-lg" href="/login" role="button">Login</a>
+    </div>
+  </div>
+
+  <!-- Pricing -->
+  <div class="container py-3">
+    <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
+      <h1 class="display-4 fw-normal text-body-emphasis">Our Plot</h1>
+      <p class="fs-5 text-body-secondary">We offer three plot sizes to suit your needs, all thoughtfully designed and easily accessible.</p>
+      <p class="fs-5 text-body-secondary">All our plots are connected by a 100 cm wide gravel path, ensuring easy access for gardeners of all abilities. The gravel paths provide a stable and durable surface, making it simple to navigate with wheelbarrows, tools, and gardening equipment.</p>
+      <img class="d-block mx-auto mb-4" src="plots.png" alt="" width="100%">
+    </div>
+
+
+    <div class="pricing-header p-3 pb-md-4 mx-auto text-center">
+      <h1 class="display-4 fw-normal text-body-emphasis">Pricing</h1>
+      <p class="fs-5 text-body-secondary">Quickly build an effective pricing table for your potential customers with this Bootstrap example. It’s built with default Bootstrap components and utilities with little customization.</p>
+    </div>
+    <div class="row row-cols-1 row-cols-md-3 mb-3 text-center">
+      
+      <div class="col">
+        <div class="card mb-4 rounded-3 shadow-sm border-primary">
+          <div class="card-header py-3 text-bg-primary border-primary">
+            <h4 class="my-0 fw-normal">Small</h4>
+          </div>
+          <div class="card-body">
+            <h1 class="card-title pricing-card-title">EUR 100<small class="text-body-secondary fw-light">/yr</small></h1>
+            <ul class="list-unstyled mt-3 mb-4">
+              <li>Perfect for Beginners</li>
+              <li>Efficient Use of Space</li>
+              <li>Cost-Effective</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      
+      <div class="col">
+        <div class="card mb-4 rounded-3 shadow-sm border-primary">
+          <div class="card-header py-3 text-bg-primary border-primary">
+            <h4 class="my-0 fw-normal">Medium</h4>
+          </div>
+          <div class="card-body">
+            <h1 class="card-title pricing-card-title">EUR 175<small class="text-body-secondary fw-light">/yr</small></h1>
+            <ul class="list-unstyled mt-3 mb-4">
+              <li>Versatile Gardening</li>
+              <li>Family-Friendly</li>
+              <li>Balanced Size</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="col">
+        <div class="card mb-4 rounded-3 shadow-sm border-primary">
+          <div class="card-header py-3 text-bg-primary border-primary">
+            <h4 class="my-0 fw-normal">Large</h4>
+          </div>
+          <div class="card-body">
+            <h1 class="card-title pricing-card-title">EUR 250<small class="text-body-secondary fw-light">/yr</small></h1>
+            <ul class="list-unstyled mt-3 mb-4">
+              <li>Extensive Cultivation</li>
+              <li>Optimal for Serious Gardeners</li>
+              <li>Allows for future expansion</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<%- include('partials/footer') %>
