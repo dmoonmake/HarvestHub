@@ -1,39 +1,46 @@
 <%- include('partials/header') %>
+
   <div class="container mt-5">
-    <h1>Register</h1>
+    <h1 class="display-5 fw-normal text-success">Register</h1>
 
     <div class="row">
       <div class="col-sm-8">
         <div class="card">
-          <div class="card-body">
+          <div class="card-body text-success">
 
-            <!-- Makes POST request to /register route -->
+            <!-- Make POST request to /register route -->
             <form action="/register" method="POST">
               <div class="form-group">
+                <label for="first_name">First Name</label>
+                <input type="text" class="form-control" name="first_name" required>
+              </div>
+              <div class="form-group">
+                <label for="last_name">Last Name</label>
+                <input type="text" class="form-control" name="last_name" required>
+              </div>
+              <div class="form-group">
                 <label for="email">Email</label>
-                <input type="email" class="form-control" name="username" required>
+                <input type="email" class="form-control" name="email" required>
               </div>
               <div class="form-group">
                 <label for="password">Password</label>
                 <input type="password" class="form-control" name="password" required>
               </div>
-
               <div class="form-group">
-                <label for="plotSize">Plot Size</label>
-                <select class="form-control" name="plotSize" required>
+                <label for="plot_size">Plot Size</label>
+                <select class="form-control text-success" name="plot_size" required>
                   <option value="small">Small Plot (50 sq.m.)</option>
                   <option value="medium">Medium Plot (100 sq.m.)</option>
                   <option value="large">Large Plot (150 sq.m.)</option>
-                </select>
-
-              <button type="submit" class="btn btn-dark">Register</button>
+                </select><hr>
+              <button type="submit" class="btn btn-success">Register</button>
             </form>
 
           </div>
         </div>
       </div>
-
     </div>
   </div>
+
 
 <%- include('partials/footer') %>

@@ -6,133 +6,248 @@
   </div>
 </div>
 
-<div class="d-flex flex-column flex-md-row p-4 gap-4 py-md-5 align-items-center justify-content-center">
-  <div class="list-group">
-    <!-- Account Details Section -->
-    <div class="list-group-item list-group-item-action d-flex gap-3 py-3">
-      <img src="https://github.com/twbs.png" alt="twbs" width="32" height="32" class="rounded-circle flex-shrink-0">
-      <div class="d-flex gap-2 w-100 justify-content-between">
-        <div>
-          <h5 class="mb-0">Account Details:</h5>
-
-          <p class="mb-0 opacity-75">Email: <%= user.email %></p>
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="list-group">
+        <!-- Admin Account Details Section -->
+        <div class="list-group-item list-group-item-action">
+          <div class="d-flex gap-3 py-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+              <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+              <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+            </svg>
+            <div class="d-flex flex-column w-100">
+              <h5 class="mb-2">Your Account Details:</h5>
+              <div class="table-responsive-sm">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>First Name</th>
+                      <th>Last Name</th>
+                      <th>Email</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><%= user.first_name %></td>
+                      <td><%= user.last_name %></td>
+                      <td><%= user.email %></td>
+                      <td> 
+                        <form action="/update-email" method="POST">
+                          <input type="hidden" name="user_id" value="<%= user.user_id%>">
+                          <div class="input-group">
+                            <input type="email" class="form-control" name="new_email" required>
+                            <button type="submit" class="btn btn-success">Update</button>
+                          </div>
+                        </form>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
         </div>
-        <small class="opacity-50 text-nowrap"><%= new Date().toLocaleDateString() %></small>
-      </div>
-    </div>
-    
-    <!-- Waiting List Section -->
-    <div class="list-group-item list-group-item-action d-flex gap-3 py-3">
-      <img src="https://github.com/twbs.png" alt="twbs" width="32" height="32" class="rounded-circle flex-shrink-0">
-      <div class="d-flex gap-2 w-100 justify-content-between">
-        <div>
-          <h5 class="mb-0">Waiting List:</h5>
-          <table class="table">
-            <thead>
-              <tr>
-                <th>Request Date</th>
-                <th>User</th>
-                <th>Plot Size</th>
-              </tr>
-            </thead>
-            <tbody>
-              <% if (waitings.length > 0) { %>
-                <% waitings.forEach(function(waiting) { %>
+        
+        <!-- Waiting List Section -->
+        <div class="list-group-item list-group-item-action">
+          <div class="d-flex gap-3 py-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-hourglass-split" viewBox="0 0 16 16">
+              <path d="M2.5 15a.5.5 0 1 1 0-1h1v-1a4.5 4.5 0 0 1 2.557-4.06c.29-.139.443-.377.443-.59v-.7c0-.213-.154-.451-.443-.59A4.5 4.5 0 0 1 3.5 3V2h-1a.5.5 0 0 1 0-1h11a.5.5 0 0 1 0 1h-1v1a4.5 4.5 0 0 1-2.557 4.06c-.29.139-.443.377-.443.59v.7c0 .213.154.451.443.59A4.5 4.5 0 0 1 12.5 13v1h1a.5.5 0 0 1 0 1zm2-13v1c0 .537.12 1.045.337 1.5h6.326c.216-.455.337-.963.337-1.5V2zm3 6.35c0 .701-.478 1.236-1.011 1.492A3.5 3.5 0 0 0 4.5 13s.866-1.299 3-1.48zm1 0v3.17c2.134.181 3 1.48 3 1.48a3.5 3.5 0 0 0-1.989-3.158C8.978 9.586 8.5 9.052 8.5 8.351z"/>
+            </svg>
+            <div class="d-flex flex-column w-100">
+              <h5 class="mb-2">Waiting List:</h5>
+            </div>
+          </div>
+
+
+          <!-- Small Plot Section -->
+          <div class="list-group-item list-group-item-action">
+            <h6 class="mb-2">Small Plot:</h6>
+            <div class="table-responsive-sm">
+              <table class="table">
+                <thead>
                   <tr>
-                    <td><%= new Date(waiting.request_date).toLocaleDateString() %></td>
-                    <td><%= waiting.email %></td>
-                    <td><%= waiting.plot_size %></td>
+                    <th>Request Date</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Plot Location</th>
+                    <th>Status</th>
+                    <!-- <th>Plot Size</th> -->
                   </tr>
-                <% }); %>
-              <% } else { %>
-                <tr>
-                  <td colspan="3">No plots in waiting list</td>
-                </tr>
-              <% } %>
-            </tbody>
-          </table>
+                </thead>
+                <tbody>
+                  <% if (waitings.length > 0) { %>
+                    <% smallWaitings.forEach(waiting => { %>
+                      <tr>
+                        <td><%= new Date(waiting.request_date).toLocaleDateString() %></td>
+                        <td><%= waiting.first_name %></td>
+                        <td><%= waiting.last_name %></td>
+                        <td><%= waiting.plot_location %></td>
+                        <td><%= waiting.status ? waiting.status: 'N/A'%></td>
+                        <!-- Add more columns as needed -->
+                      </tr>
+                    <% }) %>
+                  <% } else { %>
+                    <tr>
+                      <td colspan="3">No plots in waiting list</td>
+                    </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Medium Plot Section -->
+          <div class="list-group-item list-group-item-action">
+            <h6 class="mb-2">Medium Plot:</h6>
+            <div class="table-responsive-sm">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Request Date</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Plot Location</th>
+                    <th>Status</th>
+                    <!-- <th>Plot Size</th> -->
+                  </tr>
+                </thead>
+                <tbody>
+                  <% if (waitings.length > 0) { %>
+                    <% mediumWaitings.forEach(waiting => { %>
+                      <tr>
+                        <td><%= new Date(waiting.request_date).toLocaleDateString() %></td>
+                        <td><%= waiting.first_name %></td>
+                        <td><%= waiting.last_name %></td>
+                        <td><%= waiting.plot_location %></td>
+                        <td><%= waiting.status ? waiting.status: 'N/A'%></td>
+                        <!-- Add more columns as needed -->
+                      </tr>
+                    <% }) %>
+                  <% } else { %>
+                    <tr>
+                      <td colspan="3">No plots in waiting list</td>
+                    </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Large Plot Section -->
+          <div class="list-group-item list-group-item-action">
+            <h6 class="mb-2">Large Plot:</h6>
+            <div class="table-responsive-sm">
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Request Date</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Plot Location</th>
+                    <th>Status</th>
+                    <!-- <th>Plot Size</th> -->
+                  </tr>
+                </thead>
+                <tbody>
+                  <% if (waitings.length > 0) { %>
+                    <% largeWaitings.forEach(waiting => { %>
+                      <tr>
+                        <td><%= new Date(waiting.request_date).toLocaleDateString() %></td>
+                        <td><%= waiting.first_name %></td>
+                        <td><%= waiting.last_name %></td>
+                        <td><%= waiting.plot_location %></td>
+                        <td><%= waiting.status ? waiting.status: 'N/A'%></td>
+                        <!-- Add more columns as needed -->
+                      </tr>
+                    <% }) %>
+                  <% } else { %>
+                    <tr>
+                      <td colspan="3">No plots in waiting list</td>
+                    </tr>
+                  <% } %>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
-        <small class="opacity-50 text-nowrap">Updated: <%= new Date().toLocaleDateString() %></small>
+
+        <!-- Assigned List Section -->
+        <div class="list-group-item list-group-item-action">
+          <div class="d-flex gap-3 py-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-geo-fill" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M4 4a4 4 0 1 1 4.5 3.969V13.5a.5.5 0 0 1-1 0V7.97A4 4 0 0 1 4 3.999zm2.493 8.574a.5.5 0 0 1-.411.575c-.712.118-1.28.295-1.655.493a1.3 1.3 0 0 0-.37.265.3.3 0 0 0-.057.09V14l.002.008.016.033a.6.6 0 0 0 .145.15c.165.13.435.27.813.395.751.25 1.82.414 3.024.414s2.273-.163 3.024-.414c.378-.126.648-.265.813-.395a.6.6 0 0 0 .146-.15l.015-.033L12 14v-.004a.3.3 0 0 0-.057-.09 1.3 1.3 0 0 0-.37-.264c-.376-.198-.943-.375-1.655-.493a.5.5 0 1 1 .164-.986c.77.127 1.452.328 1.957.594C12.5 13 13 13.4 13 14c0 .426-.26.752-.544.977-.29.228-.68.413-1.116.558-.878.293-2.059.465-3.34.465s-2.462-.172-3.34-.465c-.436-.145-.826-.33-1.116-.558C3.26 14.752 3 14.426 3 14c0-.599.5-1 .961-1.243.505-.266 1.187-.467 1.957-.594a.5.5 0 0 1 .575.411"/>
+            </svg>
+            <div class="d-flex flex-column w-100">
+              <h5 class="mb-2">Assigned List:</h5>
+              <div class="table-responsive-sm">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Plot Location</th>
+                      <th>First Name</th>
+                      <th>Last Name</th>
+                      <th>Status</th>
+                      <th>Assign Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% if (assigns.length > 0) { %>
+                      <% assigns.forEach(function(assign) { %>
+                        <tr>
+                          <td><%= assign.plot_location %></td>
+                          <td><%= assign.first_name ? assign.first_name : 'Unassigned' %></td>
+                          <td><%= assign.last_name ? assign.last_name : 'Unassigned' %></td>
+                          <td><%= assign.status ? assign.status : 'N/A' %></td>
+                          <td>
+                            <% if (!assign.email) { %>
+                              <%= assign.plot_id%>
+                              <form action="/create-assignment" method="POST">
+                                <input type="hidden" name="plot_location" value="<%= assign.plot_location%>">
+                                <input type="hidden" name="admin_email" value="<%= user.email%>">
+                                <select name="user_id" class="form-select">
+                                  <% waitings.forEach(function(waiting) { %>
+                                    <% if (waiting.plot_size === assign.plot_size) { %> 
+                                      <option value="<%= waiting.user_id %>"><%= waiting.first_name %> <%= waiting.last_name %></option>
+                                    <% } %>
+                                  <% }); %>
+                                </select>
+                                <button type="submit" class="btn btn-primary btn-sm mt-1">Assign</button>
+                              </form>
+      
+                              <% } else if (assign.status === "Completed") { %>
+                                <form action="/remove-assignment" method="POST" style="display:inline;">
+                                  <input type="hidden" name="assignment_id" value="<%= assign.assignment_id %>">
+                                  <input type="hidden" name="admin_email" value="<%= user.email %>">
+                                  <button type="submit" class="btn btn-danger btn-sm">Unassign</button>
+                                </form>
+                                <form action="/extend-assignment" method="POST" style="display:inline;">
+                                  <input type="hidden" name="assignment_id" value="<%= assign.assignment_id %>">
+                                  <input type="hidden" name="admin_email" value="<%= user.email %>">
+                                  <button type="submit" class="btn btn-success btn-sm">Extend</button>
+                                </form>
+      
+                            <% } %>
+                          </td>
+                        </tr>
+                      <% }); %>
+                    <% } else { %>
+                      <tr>
+                        <td colspan="4">No plots assigned</td>
+                      </tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
-
-<!-- Assigned List Section -->
-<div class="list-group-item list-group-item-action d-flex gap-3 py-3">
-  <img src="https://github.com/twbs.png" alt="twbs" width="32" height="32" class="rounded-circle flex-shrink-0">
-  <div class="d-flex gap-2 w-100 justify-content-between">
-    <div>
-      <h5 class="mb-0">Assigned List:</h5>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Plot Location</th>
-            <th>User</th>
-            <th>Status</th>
-            <th>Plot ID</th>
-            <th>Assign Action</th>
-          </tr>
-        </thead>
-        <tbody>
-          <% if (assigns.length > 0) { %>
-            <% assigns.forEach(function(assign) { %>
-              <tr>
-                <td><%= assign.plot_location %></td>
-                <td><%= assign.email ? assign.email : 'Unassigned' %></td>
-                <td><%= assign.status ? assign.status : 'N/A' %></td>
-                <td><%= assign.plot_id%></td>
-                <td>
-                  <% if (!assign.email) { %>
-                    <%= assign.plot_id%>
-                    <form action="/assign-plot" method="POST">
-                      <input type="hidden" name="plot_location" value="<%= assign.plot_location%>">
-                      <input type="hidden" name="admin_email" value="<%= user.email%>">
-                      
-                      <select name="user_id" class="form-select">
-                        <% waitings.forEach(function(waiting) { %>
-                          <% if (waiting.plot_size === assign.plot_size) { %> <!-- Corrected line -->
-                            <option value="<%= waiting.user_id %>"><%= waiting.email %></option>
-                          <% } %>
-                        <% }); %>
-                      </select>
-                      <button type="submit" class="btn btn-primary btn-sm mt-1">Assign</button>
-                    </form>
-                  <% } %>
-                </td>
-              </tr>
-            <% }); %>
-          <% } else { %>
-            <tr>
-              <td colspan="4">No plots assigned</td>
-            </tr>
-          <% } %>
-        </tbody>
-      </table>
-    </div>
-    <small class="opacity-50 text-nowrap">Updated: <%= new Date().toLocaleDateString() %></small>
   </div>
 </div>
-
-  </div>
-</div>
-
-<script>
-  function assignPlot(plotLocation, userId) {
-    fetch("/assign-plot", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({ plot_location: plotLocation, user_id: userId })
-    })
-    .then(response => response.json())
-    .then(data => {
-      // Update table content with updated assignments data
-      // For example, you could loop through the data and update the HTML table rows
-    })
-    .catch(error => {
-      console.error("Error assigning plot:", error);
-    });
-  }
-</script>
 
 <%- include('partials/footer') %>

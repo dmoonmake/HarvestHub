@@ -1,72 +1,181 @@
 <%- include('partials/header') %>
 
-  <div class="jumbotron text-center">
-    <div class="container">
-      <!-- <i class="fas fa-key fa-6x"></i> -->
-      <h1 class="display-3">Welcome to HavestHub</h1>
-    </div>
-  </div>
-
-  <div class="d-flex flex-column flex-md-row p-4 gap-4 py-md-5 align-items-center justify-content-center">
-  <div class="list-group">
-    <a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-      <img src="https://github.com/twbs.png" alt="twbs" width="32" height="32" class="rounded-circle flex-shrink-0">
-      <div class="d-flex gap-2 w-100 justify-content-between">
-        <div>
-          <h5 class="mb-0">Account Details:</h5>
-          <p class="mb-0 opacity-75">Name: <%= user.first_name %> <%= user.last_name %></p>
-          <p class="mb-0 opacity-75">Email: <%= user.email %></p>
-        </div>
-        <small class="opacity-50 text-nowrap">now</small>
-      </div>
-    </a>
-    
-    <a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-      <img src="https://github.com/twbs.png" alt="twbs" width="32" height="32" class="rounded-circle flex-shrink-0">
-      <div class="d-flex gap-2 w-100 justify-content-between">
-        <div>
-          <h5 class="mb-0">Waiting List:</h5>
-          <ul>
-              <% if (waitings.length > 0) { %>
-                  <% waitings.forEach(function(waiting) { %>
-                    <li>Plot Size: <%= waiting.plot_size %>, Request Date: <%= waiting.request_date %></li> 
-                    <!-- Add more details from waitings table here as needed -->
-                  <% }); %>
-              <% } else { %>
-                  <li>No plots in waiting list</li>
-              <% } %>
-          </ul>
-
-        </div>
-        <small class="opacity-50 text-nowrap">3d</small>
-      </div>
-    </a>
-    <a href="#" class="list-group-item list-group-item-action d-flex gap-3 py-3" aria-current="true">
-      <img src="https://github.com/twbs.png" alt="twbs" width="32" height="32" class="rounded-circle flex-shrink-0">
-      <div class="d-flex gap-2 w-100 justify-content-between">
-        <div>
-          <h5 class="mb-0">Assigned List:</h5>
-          <ul>
-            <% if (assigns.length > 0) { %>
-                <% assigns.forEach(function(assign) { %>
-                    <li>Plot ID: <%= assign.plot_id %>, Status: <%= assign.status %></li> <!-- Example: Display plot ID -->
-                    <!-- Add more details from assigns table here as needed -->
-                <% }); %>
-            <% } else { %>
-                <li>No plots assigned</li>
-            <% } %>
-        </ul>
-        </div>
-        <small class="opacity-50 text-nowrap">1w</small>
-      </div>
-    </a>
+<div class="jumbotron text-center">
+  <div class="container">
+    <h1 class="display-3 text-success">Hello, <%= user.first_name %>!</h1>
   </div>
 </div>
 
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="list-group">
+        <!-- Account Details Section -->
+        <div class="list-group-item list-group-item-action">
+          <div class="d-flex gap-3 py-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
+              <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
+              <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
+            </svg>
+            <div class="d-flex flex-column w-100">
+              <h5 class="mb-2">Your Account Details:</h5>
+              <div class="table-responsive-sm">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>First Name</th>
+                      <th>Last Name</th>
+                      <th>Email</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><%= user.first_name %></td>
+                      <td><%= user.last_name %></td>
+                      <td><%= user.email %></td>
+                      <td> 
+                        <form action="/update-email" method="POST">
+                          <input type="hidden" name="user_id" value="<%= user.user_id%>">
+                          <div class="input-group">
+                            <input type="email" class="form-control" name="new_email" required>
+                            <button type="submit" class="btn btn-success">Update</button>
+                          </div>
+                        </form>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
 
-    <!-- Add any other content or sections as needed -->
+        <!-- Waiting List Section -->
+        <div class="list-group-item list-group-item-action">
+          <div class="d-flex gap-3 py-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-hourglass-split" viewBox="0 0 16 16">
+              <path d="M2.5 15a.5.5 0 1 1 0-1h1v-1a4.5 4.5 0 0 1 2.557-4.06c.29-.139.443-.377.443-.59v-.7c0-.213-.154-.451-.443-.59A4.5 4.5 0 0 1 3.5 3V2h-1a.5.5 0 0 1 0-1h11a.5.5 0 0 1 0 1h-1v1a4.5 4.5 0 0 1-2.557 4.06c-.29.139-.443.377-.443.59v.7c0 .213.154.451.443.59A4.5 4.5 0 0 1 12.5 13v1h1a.5.5 0 0 1 0 1zm2-13v1c0 .537.12 1.045.337 1.5h6.326c.216-.455.337-.963.337-1.5V2zm3 6.35c0 .701-.478 1.236-1.011 1.492A3.5 3.5 0 0 0 4.5 13s.866-1.299 3-1.48zm1 0v3.17c2.134.181 3 1.48 3 1.48a3.5 3.5 0 0 0-1.989-3.158C8.978 9.586 8.5 9.052 8.5 8.351z"/>
+            </svg>
+            <div class="d-flex flex-column w-100">
+              <h5 class="mb-2"> Waiting List:</h5>
+              <div class="table-responsive-sm">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Request Date</th>
+                      <th>Plot Size</th>
+                      <th>Your Rank</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% if (waitings.length > 0) { %>
+                      <% waitings.forEach(function(waiting) { %>
+                        <tr>
+                          <td><%= new Date(waiting.request_date).toLocaleDateString() %></td>
+                          <td><%= waiting.plot_size %></td>
+                          <td><%= waiting.rank %></td>
+                          <td>
+                            <% if (waitings.length > 0) { %>
+                              <form action="/remove-waiting" method="POST">
+                                <input type="hidden" name="user_id" value="<%= user.user_id%>">
+                                <input type="hidden" name="waiting_id" value="<%= waiting.waiting_id %>">
+                                <button type="submit" class="btn btn-success">Remove</button>
+                              </form>
+                            <% } %>
+                          </td>
+                        </tr>
+                      <% }); %>
+                    <% } else { %>
+                      <tr>
+                        <td colspan="2">No plot requested</td>
+                      </tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
 
-    <!-- Add any necessary JavaScript scripts or libraries here -->
+        <!-- Request a new plot -->
+        <div class="list-group-item list-group-item-action">
+          <div class="d-flex gap-3 py-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-plus-circle" viewBox="0 0 16 16">
+              <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
+              <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
+            </svg>       
+            <div class="d-flex flex-column w-100">
+              <h5 class="mb-2">Request a new plot</h5>
+              <div class="table-responsive-sm">
+                <form class="row row-cols-lg-auto g-3 align-items-center" action="/create-waiting" method="POST">
+                  <div class="col-12">
+                    <input type="hidden" name="email" value="<%= user.email%>">
+                    <select class="form-control text-success" name="plot_size" required>
+                      <option value="small">Small Plot (50 sq.m.)</option>
+                      <option value="medium">Medium Plot (100 sq.m.)</option>
+                      <option value="large">Large Plot (150 sq.m.)</option>
+                    </select>
+                  </div>
+                  <div class="col-12">
+                    <button type="submit" class="btn btn-success mt-2">Request a Plot</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Assigned List Section -->
+        <div class="list-group-item list-group-item-action">
+          <div class="d-flex gap-3 py-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-geo-fill" viewBox="0 0 16 16">
+              <path fill-rule="evenodd" d="M4 4a4 4 0 1 1 4.5 3.969V13.5a.5.5 0 0 1-1 0V7.97A4 4 0 0 1 4 3.999zm2.493 8.574a.5.5 0 0 1-.411.575c-.712.118-1.28.295-1.655.493a1.3 1.3 0 0 0-.37.265.3.3 0 0 0-.057.09V14l.002.008.016.033a.6.6 0 0 0 .145.15c.165.13.435.27.813.395.751.25 1.82.414 3.024.414s2.273-.163 3.024-.414c.378-.126.648-.265.813-.395a.6.6 0 0 0 .146-.15l.015-.033L12 14v-.004a.3.3 0 0 0-.057-.09 1.3 1.3 0 0 0-.37-.264c-.376-.198-.943-.375-1.655-.493a.5.5 0 1 1 .164-.986c.77.127 1.452.328 1.957.594C12.5 13 13 13.4 13 14c0 .426-.26.752-.544.977-.29.228-.68.413-1.116.558-.878.293-2.059.465-3.34.465s-2.462-.172-3.34-.465c-.436-.145-.826-.33-1.116-.558C3.26 14.752 3 14.426 3 14c0-.599.5-1 .961-1.243.505-.266 1.187-.467 1.957-.594a.5.5 0 0 1 .575.411"/>
+            </svg>
+            <div class="d-flex flex-column w-100">
+              <h5 class="mb-2">Assigned List:</h5>
+              <div class="table-responsive-sm">
+                <table class="table">
+                  <thead>
+                    <tr>
+                      <th>Plot Location</th>
+                      <th>Status</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% if (assigns.length > 0) { %>
+                      <% assigns.forEach(function(assign) { %>
+                        <tr>
+                          <td><%= assign.plot_location %></td>
+                          <td><%= assign.status ? assign.status : 'N/A' %></td>
+                          <td>
+                            <% if (assign.status === 'Pending') { %>
+                              <form action="/confirm-assignment" method="POST">
+                                <input type="hidden" name="email" value="<%= user.email%>">
+                                <input type="hidden" name="assignment_id" value="<%= assign.assignment_id %>">
+                                <button type="submit" class="btn btn-success">Confirm</button>
+                              </form>
+                            <% } %>
+                          </td>
+                        </tr>
+                      <% }); %>
+                    <% } else { %>
+                      <tr>
+                        <td colspan="4">No plot assigned</td>
+                      </tr>
+                    <% } %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <%- include('partials/footer') %>
 
