@@ -1,10 +1,10 @@
 import express from "express";
-import bodyParser from "body-parser";
 import pg from "pg";
 
 const app = express();
 const port = 3000;
 
+// DB Configurations
 const db = new pg.Client({
   user: "postgres",
   host: "localhost",
@@ -20,7 +20,7 @@ db.connect(err => {
   }
 });
 
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
 // Helper function to fetch user by email
@@ -71,19 +71,17 @@ const fetchAllWaitingsByUser = async () => {
       ORDER BY waitings.request_date ASC;
   ` );
     const waitings = result.rows;
-    // console.log(result);
 
     // Fetch all waitings to calculate the rank correctly
     const allWaitingsResult = await db.query("SELECT * FROM waitings ORDER BY request_date ASC");
     const allWaitings = allWaitingsResult.rows;
 
-    // console.log(allWaitings);
     // Calculate rank for each waiting and update the waitings array
     const rankedWaitings = waitings.map(waiting => ({
       ...waiting,
       rank: calculateRank(waiting.plot_size, allWaitings).find(w => w.waiting_id === waiting.waiting_id).rank
     }));
-    // console.log(rankedWaitings);
+
     return rankedWaitings;
   } catch (err) {
     console.error(err);
@@ -135,31 +133,30 @@ async function renderUserPage(user, res) {
     const assigns = await fetchAllAssignmentsByUser();
 
     res.render("admin.ejs", { user, waitings, smallWaitings, mediumWaitings, largeWaitings, assigns });
-    // res.render('admin.ejs',  { isAuthenticated: req.isAuthenticated() })
+  
   } else {
     // Fetch waitings and assignments for regular user
     const waitings = await fetchWaitingsByUser(user.user_id);
     const assigns = await fetchAssignmentsByUser(user.user_id);
+
     res.render("user.ejs", { user, waitings, assigns });
-    // res.render('user.ejs',  { isAuthenticated: req.isAuthenticated() }) 
   }
 };
 
 // Route to render homepage
 app.get("/", (req, res) => {
-  res.render("home.ejs");
+  res.render("home.ejs", { user: req.user });
 });
 
 
 // Route to render register page
 app.get("/register", (req, res) => {
-  res.render("register.ejs");
+  res.render("register.ejs", { user: req.user });
 });
 
 // Route to render login page
 app.get("/login", (req, res) => {
-  res.render("login.ejs");
-  // res.render('login.ejs',  { isAuthenticated: req.isAuthenticated() })
+  res.render("login.ejs", { user: req.user });
 });
 
 // Route to render admin page
@@ -172,8 +169,8 @@ app.get("/admin", async (req, res) => {
     const { smallWaitings, mediumWaitings, largeWaitings } = categoriseWaitingsByPlotSize(waitings);
     const assigns = await fetchAllAssignmentsByUser();
 
-    res.render("admin.ejs", { admin, waitings, smallWaitings, mediumWaitings, largeWaitings, assigns });
-    // res.render('admin.ejs',  { isAuthenticated: req.isAuthenticated() })
+    res.render("admin.ejs", { admin, user: req.user, waitings, smallWaitings, mediumWaitings, largeWaitings, assigns });
+    
   } catch (err) {
     console.log(err);
     res.status(500).send("Internal Server Error");
@@ -243,6 +240,13 @@ app.post("/login", async (req, res) => {
   }
 });
 
+// Route for user logout
+app.get("/logout", (req, res) => {
+  res.clearCookie('user'); 
+  res.redirect("/");
+});
+
+
 // Route for user update email
 app.post("/update-email", async (req, res) => {
   const new_email = req.body.new_email;
@@ -255,6 +259,7 @@ app.post("/update-email", async (req, res) => {
     const checkedResult = await db.query(
       "SELECT * FROM users WHERE email = $1", [new_email]);
 
+    // Check if email is already exists.
     if (new_email === user.email) {
       res.send("Email already exists. Try with a new email.");
     } else if (checkedResult.length > 0 ) {
@@ -376,15 +381,29 @@ app.post("/create-assignment", async (req, res) => {
       // Create the assignment
       await db.query("INSERT INTO assignments (plot_id, user_id, status) VALUES ($1, $2, 'Pending')", [plot_id, user_id]);
 
-      // // Remove the user from the waiting list
-      // await db.query("DELETE FROM waitings WHERE user_id = $1", [user_id]);
-
       const user = await fetchUserByEmail(admin_email);
       await renderUserPage(user, res);
     }
   } catch (err) {
     console.log(err);
     res.status(500).json({ error: "Error on create assignment" });
+  }
+});
+
+// Route for admin completed assignment (No longer active i.e. preriod of assigment is completed)
+app.post("/complete-assignment", async (req, res) => {
+  const { assignment_id, admin_email } = req.body;
+  console.log(`Complete assignment with email: ${admin_email}, assignment_id: ${assignment_id}`);
+
+  try {
+    await db.query("UPDATE assignments SET status = 'Completed' WHERE assignment_id = $1", [assignment_id]);
+    console.log("update status to 'completed' from assignments table");
+
+    const user = await fetchUserByEmail(admin_email);
+    await renderUserPage(user, res);
+  } catch (err) {
+    console.log(err);
+    res.status(500).send("Error on remove assignment");
   }
 });
 
@@ -425,6 +444,3 @@ app.post("/extend-assignment", async (req, res) => {
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });
-
-
-
