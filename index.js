@@ -62,13 +62,13 @@ const fetchWaitingsByUser = async (user_id) => {
 const fetchAllWaitingsByUser = async () => {
   try {
     const result = await db.query(`
-      SELECT waitings.*, users.email, users.first_name, users.last_name, assignments.assignment_id, assignments.user_id AS Assignment_User_ID, assignments.assigned_date, assignments.status, plots.plot_location
-      FROM waitings 
-      JOIN users ON waitings.user_id = users.user_id
-      LEFT JOIN assignments ON waitings.user_id = assignments.user_id
+
+      SELECT waitings.*, users.email, users.first_name, users.last_name, assignments.assignment_id, assignments.user_id AS assignment_user_id, assignments.assigned_date, assignments.status, plots.plot_location
+      FROM waitings
+      LEFT JOIN users ON waitings.user_id = users.user_id
+      LEFT JOIN assignments ON waitings.user_id = assignments.user_id AND (assignments.status = 'Pending' OR assignments.status IS NULL)
       LEFT JOIN plots ON assignments.plot_id = plots.plot_id
-      WHERE assignments.status = 'Pending' OR assignments.status IS NULL
-      ORDER BY waitings.request_date ASC
+      ORDER BY waitings.request_date ASC;
   ` );
     const waitings = result.rows;
     // console.log(result);
@@ -135,11 +135,13 @@ async function renderUserPage(user, res) {
     const assigns = await fetchAllAssignmentsByUser();
 
     res.render("admin.ejs", { user, waitings, smallWaitings, mediumWaitings, largeWaitings, assigns });
+    // res.render('admin.ejs',  { isAuthenticated: req.isAuthenticated() })
   } else {
     // Fetch waitings and assignments for regular user
     const waitings = await fetchWaitingsByUser(user.user_id);
     const assigns = await fetchAssignmentsByUser(user.user_id);
     res.render("user.ejs", { user, waitings, assigns });
+    // res.render('user.ejs',  { isAuthenticated: req.isAuthenticated() }) 
   }
 };
 
@@ -147,6 +149,7 @@ async function renderUserPage(user, res) {
 app.get("/", (req, res) => {
   res.render("home.ejs");
 });
+
 
 // Route to render register page
 app.get("/register", (req, res) => {
@@ -156,6 +159,7 @@ app.get("/register", (req, res) => {
 // Route to render login page
 app.get("/login", (req, res) => {
   res.render("login.ejs");
+  // res.render('login.ejs',  { isAuthenticated: req.isAuthenticated() })
 });
 
 // Route to render admin page
@@ -169,6 +173,7 @@ app.get("/admin", async (req, res) => {
     const assigns = await fetchAllAssignmentsByUser();
 
     res.render("admin.ejs", { admin, waitings, smallWaitings, mediumWaitings, largeWaitings, assigns });
+    // res.render('admin.ejs',  { isAuthenticated: req.isAuthenticated() })
   } catch (err) {
     console.log(err);
     res.status(500).send("Internal Server Error");
@@ -177,11 +182,13 @@ app.get("/admin", async (req, res) => {
 
 // Route for user registration
 app.post("/register", async (req, res) => {
+  const first_name = req.body.first_name;
+  const last_name = req.body.last_name;
   const email = req.body.email;
   const password = req.body.password;
   const plot_size = req.body.plot_size;
 
-  console.log(`Register attempt with email: ${email}, password: ${password}, plot_size: ${plot_size}`);
+  console.log(`Register attempt with first name: ${first_name}, last name: ${last_name}, email: ${email}, password: ${password}, plot_size: ${plot_size}`);
 
   try {
     const existingUser = await fetchUserByEmail(email);
@@ -190,8 +197,8 @@ app.post("/register", async (req, res) => {
       res.send("Email already exists. Try logging in.");
     } else {
       const result = await db.query(
-        "INSERT INTO users (email, password) VALUES ($1, $2) RETURNING user_id",
-        [email, password]
+        "INSERT INTO users (first_name, last_name, email, password) VALUES ($1, $2, $3, $4) RETURNING user_id",
+        [first_name, last_name, email, password]
       );
 
       const newUserId = result.rows[0].user_id;
@@ -369,8 +376,8 @@ app.post("/create-assignment", async (req, res) => {
       // Create the assignment
       await db.query("INSERT INTO assignments (plot_id, user_id, status) VALUES ($1, $2, 'Pending')", [plot_id, user_id]);
 
-      // Remove the user from the waiting list
-      await db.query("DELETE FROM waitings WHERE user_id = $1", [user_id]);
+      // // Remove the user from the waiting list
+      // await db.query("DELETE FROM waitings WHERE user_id = $1", [user_id]);
 
       const user = await fetchUserByEmail(admin_email);
       await renderUserPage(user, res);

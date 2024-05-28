@@ -1,5 +1,7 @@
 <%- include('partials/header') %>
 
+
+
 <div class="jumbotron text-center">
   <div class="container">
     <h1 class="display-3">Hello, admin!</h1>
@@ -59,6 +61,36 @@
             </svg>
             <div class="d-flex flex-column w-100">
               <h5 class="mb-2">Waiting List:</h5>
+              <table class="table">
+                <thead>
+                  <tr>
+                    <th>Request Date</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Plot Location</th>
+                    <th>Status</th>
+                    <!-- <th>Plot Size</th> -->
+                  </tr>
+                </thead>
+                <tbody>
+                  <% if (waitings.length > 0) { %>
+                    <% waitings.forEach(waiting => { %>
+                      <tr>
+                        <td><%= new Date(waiting.request_date).toLocaleDateString() %></td>
+                        <td><%= waiting.first_name %></td>
+                        <td><%= waiting.last_name %></td>
+                        <td><%= waiting.plot_location %></td>
+                        <td><%= waiting.status ? waiting.status: 'N/A'%></td>
+                        <!-- Add more columns as needed -->
+                      </tr>
+                    <% }) %>
+                  <% } else { %>
+                    <tr>
+                      <td colspan="3">No plots in waiting list</td>
+                    </tr>
+                  <% } %>
+                </tbody>
+              </table>
             </div>
           </div>
 
@@ -208,6 +240,7 @@
                               <form action="/create-assignment" method="POST">
                                 <input type="hidden" name="plot_location" value="<%= assign.plot_location%>">
                                 <input type="hidden" name="admin_email" value="<%= user.email%>">
+
                                 <select name="user_id" class="form-select">
                                   <% waitings.forEach(function(waiting) { %>
                                     <% if (waiting.plot_size === assign.plot_size) { %> 
@@ -221,7 +254,7 @@
                               <% } else if (assign.status === "Completed") { %>
                                 <form action="/remove-assignment" method="POST" style="display:inline;">
                                   <input type="hidden" name="assignment_id" value="<%= assign.assignment_id %>">
-                                  <input type="hidden" name="admin_email" value="<%= user.email %>">
+                                  <input type="hidden" name="admin_email" value="<%= user.email%>">
                                   <button type="submit" class="btn btn-danger btn-sm">Unassign</button>
                                 </form>
                                 <form action="/extend-assignment" method="POST" style="display:inline;">
