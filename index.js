@@ -342,7 +342,7 @@ app.post("/update-email", async (req, res) => {
     } else {
       await db.query("UPDATE users SET email = $1 WHERE user_id = $2", [new_email, user_id]);
       console.log(`Email is updated`);
-      res.render("confirm.ejs");
+      res.render("confirm.ejs", { user: req.user });
     }
   } catch (err) {
     console.log(err);
