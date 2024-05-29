@@ -23,19 +23,34 @@ db.connect(err => {
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
-// Helper function to fetch user by email
+/**
+ * Fecth a user by their email.
+ *
+ * @param {string} email - The email of the user to fetch.
+ * @returns {Object} The user object.
+ */
 const fetchUserByEmail = async (email) => {
   const result = await db.query("SELECT * FROM users WHERE email = $1", [email]);
   return result.rows[0];
 };
 
-// Helper function to fetch user by user_id
+/**
+ * Fetch user by user_id
+ *
+ * @param {number} user_id - The ID of the user to fetch.
+ * @returns {Object} The user object.
+ */
 const fetchUserByUserID = async (user_id) => {
   const result = await db.query("SELECT * FROM users WHERE user_id = $1", [user_id]);
   return result.rows[0];
 };
 
-// Helper function to fetch waitings by user
+/**
+ * Fetch waitings by user id
+ *
+ * @param {number} user_id - The ID of the user.
+ * @returns {Array} An array of waiting requests.
+ */
 const fetchWaitingsByUser = async (user_id) => {
   try {
     const result = await db.query("SELECT * FROM waitings WHERE user_id = $1 ORDER BY request_date ASC", [user_id]);
@@ -58,8 +73,12 @@ const fetchWaitingsByUser = async (user_id) => {
   }
 };
 
-// Helper function to fetch ALL waitings by user
-const fetchAllWaitingsByUser = async () => {
+/**
+ * Fetch ALL waitings by user
+ *
+ * @returns {Array} An array of all waiting requests.
+ */
+const fetchWaitingsForAllUsers = async () => {
   try {
     const result = await db.query(`
 
@@ -89,14 +108,23 @@ const fetchAllWaitingsByUser = async () => {
   }
 }; 
 
-// Helper function to fetch assignments by user
+/**
+ * Fetch assignments by user ID.
+ *
+ * @param {number} user_id - The ID of the user.
+ * @returns {Array} An array of assignments.
+ */
 const fetchAssignmentsByUser = async (user_id) => {
   const result = await db.query("SELECT assignments.*, plots.plot_location FROM assignments LEFT JOIN plots on plots.plot_id = assignments.plot_id WHERE user_id = $1", [user_id]);
   return result.rows;
 };
 
-// Helper function to fetch ALL assignments by user and plot 
-const fetchAllAssignmentsByUser = async () => {
+/**
+ * Fetch all assignments.
+ *
+ * @returns {Array} An array of all assignments.
+ */
+const fetchAssignmentsForAllUsers = async () => {
   const result = await db.query(`
     SELECT plots.plot_location, plots.plot_size, assignments.*, users.email, users.first_name, users.last_name, users.user_id
     FROM plots
@@ -107,7 +135,12 @@ const fetchAllAssignmentsByUser = async () => {
   return result.rows;
 };
 
-// Helper function to categorise waitings by plot size
+/**
+ * Categorise waiting requests by plot size.
+ *
+ * @param {Array} waitings - An array of waiting requests.
+ * @returns {Object} An object with categorized waitings.
+ */
 const categoriseWaitingsByPlotSize = (waitings) => {
   const smallWaitings = waitings.filter(waiting => waiting.plot_size === 'small');
   const mediumWaitings = waitings.filter(waiting => waiting.plot_size === 'medium');
@@ -115,7 +148,13 @@ const categoriseWaitingsByPlotSize = (waitings) => {
   return { smallWaitings, mediumWaitings, largeWaitings };
 };
 
-// Helper function to calculate rank by plot size
+/**
+ * Calculate the rank of waitings by plot size.
+ *
+ * @param {string} plot_size - The size of the plot.
+ * @param {Array} allWaitings - An array of all waitings.
+ * @returns {Array} An array of ranked waitings.
+ */
 const calculateRank = (plot_size, allWaitings) => {
   const filteredWaitings = allWaitings.filter(waiting => waiting.plot_size === plot_size);
   return filteredWaitings.map((waiting, index) => ({
@@ -124,13 +163,18 @@ const calculateRank = (plot_size, allWaitings) => {
   }));
 };
 
-// Function to render user or admin page based on the user type
+/**
+ * Render the user or admin page based on the user type.
+ *
+ * @param {Object} user - The user object.
+ * @param {Object} res - The response object.
+ */
 async function renderUserPage(user, res) {
   if (user.is_admin) {
     // Fetch waitings and assignments for admin
-    const waitings = await fetchAllWaitingsByUser();
+    const waitings = await fetchWaitingsForAllUsers();
     const { smallWaitings, mediumWaitings, largeWaitings } = categoriseWaitingsByPlotSize(waitings);
-    const assigns = await fetchAllAssignmentsByUser();
+    const assigns = await fetchAssignmentsForAllUsers();
 
     res.render("admin.ejs", { user, waitings, smallWaitings, mediumWaitings, largeWaitings, assigns });
   
@@ -143,31 +187,46 @@ async function renderUserPage(user, res) {
   }
 };
 
-// Route to render homepage
+/**
+ * @route GET /
+ * @desc Render the homepage
+ * @access Public
+ */
 app.get("/", (req, res) => {
   res.render("home.ejs", { user: req.user });
 });
 
-
-// Route to render register page
+/**
+ * @route GET /register
+ * @desc Render the register page
+ * @access Public
+ */
 app.get("/register", (req, res) => {
   res.render("register.ejs", { user: req.user });
 });
 
-// Route to render login page
+/**
+ * @route GET /login
+ * @desc Render the login page
+ * @access Public
+ */
 app.get("/login", (req, res) => {
   res.render("login.ejs", { user: req.user });
 });
 
-// Route to render admin page
+/**
+ * @route GET /admin
+ * @desc Render the admin page with waiting lists and assignments
+ * @access Admin
+ */
 app.get("/admin", async (req, res) => {
   try {
     const adminResult = await db.query("SELECT * FROM users WHERE is_admin = true");
     const admin = adminResult.rows[0];
 
-    const waitings = await fetchAllWaitingsByUser();
+    const waitings = await fetchWaitingsForAllUsers();
     const { smallWaitings, mediumWaitings, largeWaitings } = categoriseWaitingsByPlotSize(waitings);
-    const assigns = await fetchAllAssignmentsByUser();
+    const assigns = await fetchAssignmentsForAllUsers();
 
     res.render("admin.ejs", { admin, user: req.user, waitings, smallWaitings, mediumWaitings, largeWaitings, assigns });
     
@@ -177,7 +236,11 @@ app.get("/admin", async (req, res) => {
   }
 });
 
-// Route for user registration
+/**
+ * @route POST /register
+ * @desc Register a new user
+ * @access Public
+ */
 app.post("/register", async (req, res) => {
   const first_name = req.body.first_name;
   const last_name = req.body.last_name;
@@ -207,7 +270,7 @@ app.post("/register", async (req, res) => {
       );
 
       console.log(`Inserted into waiting table`);
-      res.render("confirm.ejs");
+      res.render("confirm.ejs", { user: req.user });
     }
   } catch (err) {
     console.log(err);
@@ -215,7 +278,11 @@ app.post("/register", async (req, res) => {
   }
 });
 
-// Route for user login
+/**
+ * @route POST /login
+ * @desc Authenticate a user and log them in
+ * @access Public
+ */
 app.post("/login", async (req, res) => {
   const email = req.body.email;
   const password = req.body.password;
@@ -240,14 +307,22 @@ app.post("/login", async (req, res) => {
   }
 });
 
-// Route for user logout
+/**
+ * @route GET /logout
+ * @desc Log out the user and clear their session
+ * @access Public
+ */
 app.get("/logout", (req, res) => {
   res.clearCookie('user'); 
   res.redirect("/");
 });
 
 
-// Route for user update email
+/**
+ * @route POST /update-email
+ * @desc Update the user's email
+ * @access Private
+ */
 app.post("/update-email", async (req, res) => {
   const new_email = req.body.new_email;
   const user_id = req.body.user_id;
@@ -275,7 +350,11 @@ app.post("/update-email", async (req, res) => {
   }
 });
 
-// Route for user create waiting request
+/**
+ * @route POST /create-waiting
+ * @desc Create a new waiting request for a plot
+ * @access Private
+ */
 app.post("/create-waiting", async (req, res) => {
   const email = req.body.email;
   const plot_size = req.body.plot_size;
@@ -310,7 +389,11 @@ app.post("/create-waiting", async (req, res) => {
   }
 });
 
-// Route for user remove waiting request
+/**
+ * @route POST /remove-waiting
+ * @desc Remove a waiting request for a plot
+ * @access Private
+ */
 app.post("/remove-waiting", async (req, res) => {
   const user_id = req.body.user_id;
   const waiting_id = req.body.waiting_id;
@@ -330,7 +413,11 @@ app.post("/remove-waiting", async (req, res) => {
   }
 });
 
-// Route for user confirm assignment
+/**
+ * @route POST /confirm-assignment
+ * @desc Confirm an assignment for a user
+ * @access Private
+ */
 app.post("/confirm-assignment", async (req, res) => {
   const email = req.body.email;
   const assignment_id = req.body.assignment_id;
@@ -350,7 +437,11 @@ app.post("/confirm-assignment", async (req, res) => {
   }
 });
 
-// Route for admin create assignment
+/**
+ * @route POST /create-assignment
+ * @desc Admin creates a new assignment and mark as Pending
+ * @access Admin
+ */
 app.post("/create-assignment", async (req, res) => {
   const { plot_location, admin_email, user_id } = req.body;
 
@@ -390,7 +481,11 @@ app.post("/create-assignment", async (req, res) => {
   }
 });
 
-// Route for admin completed assignment (No longer active i.e. preriod of assigment is completed)
+/**
+ * @route POST /complete-assignment
+ * @desc Mark an assignment as Completed
+ * @access Admin
+ */
 app.post("/complete-assignment", async (req, res) => {
   const { assignment_id, admin_email } = req.body;
   console.log(`Complete assignment with email: ${admin_email}, assignment_id: ${assignment_id}`);
@@ -407,7 +502,11 @@ app.post("/complete-assignment", async (req, res) => {
   }
 });
 
-// Route for admin remove assignment (after completed)
+/**
+ * @route POST /remove-assignment
+ * @desc Remove an assignment 
+ * @access Admin
+ */
 app.post("/remove-assignment", async (req, res) => {
   const { assignment_id, admin_email } = req.body;
   console.log(`Remove assignment with email: ${admin_email}, assignment_id: ${assignment_id}`);
@@ -424,7 +523,11 @@ app.post("/remove-assignment", async (req, res) => {
   }
 });
 
-// oute for admin extend assignment (after completed )
+/**
+ * @route POST /extend-assignment
+ * @desc Mark an assignment as Active
+ * @access Admin
+ */
 app.post("/extend-assignment", async (req, res) => {
   const { assignment_id, admin_email } = req.body;
   console.log(`Extend assignment with email: ${admin_email}, assignment_id: ${assignment_id}`);
@@ -441,6 +544,7 @@ app.post("/extend-assignment", async (req, res) => {
   }
 });
 
+// Start the server
 app.listen(port, () => {
   console.log(`Server running on port ${port}`);
 });

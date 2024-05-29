@@ -7,3 +7,6 @@
 
 # Node & NPM files
 node_modules/
+
+# Documentation
+out/
