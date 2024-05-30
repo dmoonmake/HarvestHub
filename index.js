@@ -264,6 +264,7 @@ app.post("/register", async (req, res) => {
       const newUserId = result.rows[0].user_id;
       console.log(`New user ID: ${newUserId}`);
 
+      // Insert user and plot request to the DB
       await db.query(
         "INSERT INTO waitings (user_id, request_date, plot_size) VALUES ($1, CURRENT_TIMESTAMP, $2)",
         [newUserId, plot_size]
@@ -292,6 +293,7 @@ app.post("/login", async (req, res) => {
   try {
     const user = await fetchUserByEmail(email);
 
+    // If using a correct password
     if (user) {
       if (password === user.password) {
         await renderUserPage(user, res);
@@ -299,6 +301,8 @@ app.post("/login", async (req, res) => {
         res.send("Incorrect Password");
       }
     } else {
+
+      // If cant find the user
       res.send("User not found");
     }
   } catch (err) {
@@ -340,6 +344,8 @@ app.post("/update-email", async (req, res) => {
     } else if (checkedResult.length > 0 ) {
       res.send("Email already exists. Try with a new email.");
     } else {
+
+      // Update to with the new email
       await db.query("UPDATE users SET email = $1 WHERE user_id = $2", [new_email, user_id]);
       console.log(`Email is updated`);
       res.render("confirm.ejs", { user: req.user });
@@ -364,17 +370,18 @@ app.post("/create-waiting", async (req, res) => {
   try {
     const user = await fetchUserByEmail(email);
 
-    // Check if there is already a request for the same plot size
     const existingRequest = await db.query(
       "SELECT * FROM waitings WHERE user_id = $1 AND plot_size = $2",
       [user.user_id, plot_size]
     );
 
+        // Check if there is already a request for the same plot size
     if (existingRequest.rows.length > 0) {
       console.log(`User already has a request for a ${plot_size} plot`);
       res.send(`You already have a request for a ${plot_size} plot.`);
     } else {
-      // Insert new waiting request if no existing request found
+
+      // Insert new waiting request if no existing request on the same plot size found
       await db.query(
         "INSERT INTO waitings (user_id, request_date, plot_size) VALUES ($1, CURRENT_TIMESTAMP, $2)",
         [user.user_id, plot_size]
@@ -402,6 +409,8 @@ app.post("/remove-waiting", async (req, res) => {
 
   try {
     const user = await fetchUserByUserID(user_id);
+
+    // Remove the waiting list
     await db.query("DELETE FROM waitings WHERE user_id = $1 AND waiting_id = $2", [user_id, waiting_id]);
     
     console.log(`Removed from the waiting table`);
@@ -419,16 +428,28 @@ app.post("/remove-waiting", async (req, res) => {
  * @access Private
  */
 app.post("/confirm-assignment", async (req, res) => {
-  const email = req.body.email;
+  const user_id = req.body.user_id;
   const assignment_id = req.body.assignment_id;
 
-  console.log(`Confirm with email: ${email}, assignement ID: ${assignment_id}`);
+  console.log(`Confirm with user_id: ${user_id}, assignement ID: ${assignment_id}`);
 
   try {
-    const user = await fetchUserByEmail(email);
+    const user = await fetchUserByUserID(user_id);
 
+    // Update the assignment status to 'Active'
     await db.query("UPDATE assignments SET status = 'Active' WHERE assignment_id = $1", [assignment_id]);
     console.log(`Updated Status at assinment table`);
+
+    // Fetch the plot size of the assignment
+    const plotSizeResult = await db.query(
+      "SELECT plots.plot_size FROM assignments INNER JOIN plots ON assignments.plot_id = plots.plot_id WHERE assignments.assignment_id = $1",
+      [assignment_id]
+    );
+    const plot_size = plotSizeResult.rows[0].plot_size;
+
+    // Delete the waiting request for the user with the same plot size
+    await db.query("DELETE FROM waitings WHERE user_id = $1 AND plot_size = $2", [user_id, plot_size]);
+    console.log(`Deleted waiting request for user ID: ${user_id} with plot size: ${plot_size}`);
     
     await renderUserPage(user, res);
   } catch (err) {
@@ -448,7 +469,7 @@ app.post("/create-assignment", async (req, res) => {
   console.log(`create-assignment with plot_location: ${plot_location}, admin_email: ${admin_email}, user_id: ${user_id}`);
 
   try {
-    // Check if the user already has a pending assignment
+    // Check if the user already has a Pending assignment
     const existingAssignment = await db.query(
       "SELECT * FROM assignments WHERE user_id = $1 AND status = 'Pending'",
       [user_id]
@@ -456,7 +477,7 @@ app.post("/create-assignment", async (req, res) => {
     console.log(existingAssignment);
 
     if (existingAssignment.rows.length > 0) {
-      res.send("User already has a pending assignment.");
+      res.send("User already has a Pendign assignment.");
     } else {
       // Fetch the plot ID
       const plotResult = await db.query("SELECT plot_id FROM plots WHERE plot_location = $1", [plot_location]);
@@ -491,8 +512,9 @@ app.post("/complete-assignment", async (req, res) => {
   console.log(`Complete assignment with email: ${admin_email}, assignment_id: ${assignment_id}`);
 
   try {
+    // Update status to Completed
     await db.query("UPDATE assignments SET status = 'Completed' WHERE assignment_id = $1", [assignment_id]);
-    console.log("update status to 'completed' from assignments table");
+    console.log("update status to 'Completed' from assignments table");
 
     const user = await fetchUserByEmail(admin_email);
     await renderUserPage(user, res);

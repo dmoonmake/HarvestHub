@@ -45,6 +45,8 @@ Workflow: Unassigned >> Pending >> Active >> Completed >> Unassigned OR Active
                       <td><%= user.last_name %></td>
                       <td><%= user.email %></td>
                       <td> 
+
+                        <!-- Make POST request to /update-email route -->
                         <form action="/update-email" method="POST">
                           <input type="hidden" name="user_id" value="<%= user.user_id%>">
                           <div class="input-group">
@@ -213,6 +215,7 @@ Workflow: Unassigned >> Pending >> Active >> Completed >> Unassigned OR Active
                             <!-- If plot is unassigned (no linked email), offer 'create' assignment funtionality -->
                             <% if (!assign.email) { %>
                               <%= assign.plot_id%>
+                              <!-- Make POST request to /create-assignment route -->
                               <form action="/create-assignment" method="POST">
                                 <input type="hidden" name="plot_location" value="<%= assign.plot_location%>">
                                 <input type="hidden" name="admin_email" value="<%= user.email%>">
@@ -230,11 +233,15 @@ Workflow: Unassigned >> Pending >> Active >> Completed >> Unassigned OR Active
 
                               <!-- If plot is in 'Completed', offer 'remove' or 'extend' assignment funtionalities -->
                               <% } else if (assign.status === "Completed") { %>
+
+                                <!-- Make POST request to /remove-assignment route -->
                                 <form action="/remove-assignment" method="POST" style="display:inline;">
                                   <input type="hidden" name="assignment_id" value="<%= assign.assignment_id %>">
                                   <input type="hidden" name="admin_email" value="<%= user.email%>">
                                   <button type="submit" class="btn btn-danger btn-sm">Unassign</button>
                                 </form>
+
+                                <!-- Make POST request to /extend-assignment route -->
                                 <form action="/extend-assignment" method="POST" style="display:inline;">
                                   <input type="hidden" name="assignment_id" value="<%= assign.assignment_id %>">
                                   <input type="hidden" name="admin_email" value="<%= user.email %>">
@@ -243,11 +250,13 @@ Workflow: Unassigned >> Pending >> Active >> Completed >> Unassigned OR Active
                               
                                 <!-- If plot is in 'Active', offer 'Complete' assignment funtionalities -->
                                 <% } else if (assign.status === "Active") { %>
-                                <form action="/complete-assignment" method="POST" style="display:inline;">
-                                  <input type="hidden" name="assignment_id" value="<%= assign.assignment_id %>">
-                                  <input type="hidden" name="admin_email" value="<%= user.email%>">
-                                  <button type="submit" class="btn btn-warning btn-sm">Completed</button>
-                                </form>
+                                  
+                                  <!-- Make POST request to /complete-assignment route -->
+                                  <form action="/complete-assignment" method="POST" style="display:inline;">
+                                    <input type="hidden" name="assignment_id" value="<%= assign.assignment_id %>">
+                                    <input type="hidden" name="admin_email" value="<%= user.email%>">
+                                    <button type="submit" class="btn btn-warning btn-sm">Completed</button>
+                                  </form>
                               <% } %>
                           </td>
                         </tr>

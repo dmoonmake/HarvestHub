@@ -35,6 +35,7 @@
                       <td><%= user.last_name %></td>
                       <td><%= user.email %></td>
                       <td> 
+                        <!-- Make POST request to /update-email route -->
                         <form action="/update-email" method="POST">
                           <input type="hidden" name="user_id" value="<%= user.user_id%>">
                           <div class="input-group">
@@ -78,6 +79,7 @@
                           <td><%= waiting.rank %></td>
                           <td>
                             <% if (waitings.length > 0) { %>
+                              <!-- Make POST request to /remove-waiting route -->
                               <form action="/remove-waiting" method="POST">
                                 <input type="hidden" name="user_id" value="<%= user.user_id%>">
                                 <input type="hidden" name="waiting_id" value="<%= waiting.waiting_id %>">
@@ -111,6 +113,8 @@
               <!-- Request new plot functionality -->
               <h5 class="mb-2">Request a new plot</h5>
               <div class="table-responsive-sm">
+
+                <!-- Make POST request to /create-waiting route -->
                 <form class="row row-cols-lg-auto g-3 align-items-center" action="/create-waiting" method="POST">
                   <div class="col-12">
                     <input type="hidden" name="email" value="<%= user.email%>">
@@ -153,10 +157,11 @@
                           <td><%= assign.plot_location %></td>
                           <td><%= assign.status ? assign.status : 'N/A' %></td>
                           <td>
-                            <!-- If Plot is offered (Pending Status), user can confirm the assignment -->
+
+                            <!-- Make POST request to /confirm-assignment route -->
                             <% if (assign.status === 'Pending') { %>
                               <form action="/confirm-assignment" method="POST">
-                                <input type="hidden" name="email" value="<%= user.email%>">
+                                <input type="hidden" name="user_id" value="<%= user.user_id%>">
                                 <input type="hidden" name="assignment_id" value="<%= assign.assignment_id %>">
                                 <button type="submit" class="btn btn-success">Confirm</button>
                               </form>
