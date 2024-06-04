@@ -1,3 +1,5 @@
+// Import the dependencies
+import 'dotenv/config';
 import express from "express";
 import pg from "pg";
 
@@ -6,12 +8,13 @@ const port = 3000;
 
 // DB Configurations
 const db = new pg.Client({
-  user: "postgres",
-  host: "localhost",
-  database: "HarvestHub",
-  password: "123456",
-  port: 5432,
+  user: process.env.DB_USER,
+  host: process.env.DB_HOST,
+  database: process.env.DB_NAME,
+  password: process.env.DB_PASS,
+  port: process.env.DB_PORT,
 });
+
 db.connect(err => {
   if (err) {
     console.error('Could not connect to the database', err.stack);
