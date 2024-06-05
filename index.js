@@ -344,20 +344,26 @@ app.post("/update-email", async (req, res) => {
     // Check if email is already exists.
     if (new_email === user.email) {
       res.send("Email already exists. Try with a new email.");
-    } else if (checkedResult.length > 0 ) {
+    } else if (checkedResult.rows.length > 0 ) { // Adjusted condition to check if any rows are returned
       res.send("Email already exists. Try with a new email.");
     } else {
 
-      // Update to with the new email
+      // Update with the new email
       await db.query("UPDATE users SET email = $1 WHERE user_id = $2", [new_email, user_id]);
       console.log(`Email is updated`);
       res.render("confirm.ejs", { user: req.user });
     }
   } catch (err) {
-    console.log(err);
-    res.send("Error on update user email");
+    // Check if the error is due to duplicate key violation
+    if (err.code === '23505' && err.constraint === 'email_unique') {
+      res.send("Email already exists. Try with a new email.");
+    } else {
+      console.log(err);
+      res.send("Error on update user email");
+    }
   }
 });
+
 
 /**
  * @route POST /create-waiting
@@ -480,7 +486,7 @@ app.post("/create-assignment", async (req, res) => {
     console.log(existingAssignment);
 
     if (existingAssignment.rows.length > 0) {
-      res.send("User already has a Pendign assignment.");
+      res.send("User already has a Pending assignment.");
     } else {
       // Fetch the plot ID
       const plotResult = await db.query("SELECT plot_id FROM plots WHERE plot_location = $1", [plot_location]);

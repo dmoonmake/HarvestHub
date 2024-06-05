@@ -17,7 +17,7 @@
               <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0"/>
               <path fill-rule="evenodd" d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1"/>
             </svg>
-            <div class="d-flex flex-column w-100">
+            <div class="d-flex flex-column">
               <h5 class="mb-2">Your Account Details:</h5>
               <div class="table-responsive-sm">
                 <table class="table">
@@ -58,7 +58,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-hourglass-split" viewBox="0 0 16 16">
               <path d="M2.5 15a.5.5 0 1 1 0-1h1v-1a4.5 4.5 0 0 1 2.557-4.06c.29-.139.443-.377.443-.59v-.7c0-.213-.154-.451-.443-.59A4.5 4.5 0 0 1 3.5 3V2h-1a.5.5 0 0 1 0-1h11a.5.5 0 0 1 0 1h-1v1a4.5 4.5 0 0 1-2.557 4.06c-.29.139-.443.377-.443.59v.7c0 .213.154.451.443.59A4.5 4.5 0 0 1 12.5 13v1h1a.5.5 0 0 1 0 1zm2-13v1c0 .537.12 1.045.337 1.5h6.326c.216-.455.337-.963.337-1.5V2zm3 6.35c0 .701-.478 1.236-1.011 1.492A3.5 3.5 0 0 0 4.5 13s.866-1.299 3-1.48zm1 0v3.17c2.134.181 3 1.48 3 1.48a3.5 3.5 0 0 0-1.989-3.158C8.978 9.586 8.5 9.052 8.5 8.351z"/>
             </svg>
-            <div class="d-flex flex-column w-100">
+            <div class="d-flex flex-column input-group">
               <h5 class="mb-2"> Waiting List:</h5>
               <div class="table-responsive-sm">
                 <table class="table">
@@ -91,7 +91,7 @@
                       <% }); %>
                     <% } else { %>
                       <tr>
-                        <td colspan="2">No plot requested</td>
+                        <td colspan="3">No plot requested</td>
                       </tr>
                     <% } %>
                   </tbody>
@@ -108,27 +108,23 @@
               <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14m0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16"/>
               <path d="M8 4a.5.5 0 0 1 .5.5v3h3a.5.5 0 0 1 0 1h-3v3a.5.5 0 0 1-1 0v-3h-3a.5.5 0 0 1 0-1h3v-3A.5.5 0 0 1 8 4"/>
             </svg>       
-            <div class="d-flex flex-column w-100">
+            <div class="d-flex flex-column">
 
               <!-- Request new plot functionality -->
               <h5 class="mb-2">Request a new plot</h5>
-              <div class="table-responsive-sm">
 
-                <!-- Make POST request to /create-waiting route -->
-                <form class="row row-cols-lg-auto g-3 align-items-center" action="/create-waiting" method="POST">
-                  <div class="col-12">
-                    <input type="hidden" name="email" value="<%= user.email%>">
-                    <select class="form-control text-success" name="plot_size" required>
-                      <option value="small">Small Plot (50 sq.m.)</option>
-                      <option value="medium">Medium Plot (100 sq.m.)</option>
-                      <option value="large">Large Plot (150 sq.m.)</option>
-                    </select>
-                  </div>
-                  <div class="col-12">
-                    <button type="submit" class="btn btn-success mt-2">Request a Plot</button>
-                  </div>
-                </form>
-              </div>
+              <!-- Make POST request to /create-waiting route -->
+              <form class="row row-cols-lg-auto g-3 align-items-center" action="/create-waiting" method="POST">
+                <div class="col-12">
+                  <input type="hidden" name="email" value="<%= user.email%>">
+                  <select class="form-control text-success" name="plot_size" required>
+                    <option value="small">Small Plot (50 sq.m.)</option>
+                    <option value="medium">Medium Plot (100 sq.m.)</option>
+                    <option value="large">Large Plot (150 sq.m.)</option>
+                  </select>
+                  <button type="submit" class="btn btn-success mt-2">Request a Plot</button>
+                </div>
+              </form>
             </div>
           </div>
         </div>
@@ -139,7 +135,7 @@
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-geo-fill" viewBox="0 0 16 16">
               <path fill-rule="evenodd" d="M4 4a4 4 0 1 1 4.5 3.969V13.5a.5.5 0 0 1-1 0V7.97A4 4 0 0 1 4 3.999zm2.493 8.574a.5.5 0 0 1-.411.575c-.712.118-1.28.295-1.655.493a1.3 1.3 0 0 0-.37.265.3.3 0 0 0-.057.09V14l.002.008.016.033a.6.6 0 0 0 .145.15c.165.13.435.27.813.395.751.25 1.82.414 3.024.414s2.273-.163 3.024-.414c.378-.126.648-.265.813-.395a.6.6 0 0 0 .146-.15l.015-.033L12 14v-.004a.3.3 0 0 0-.057-.09 1.3 1.3 0 0 0-.37-.264c-.376-.198-.943-.375-1.655-.493a.5.5 0 1 1 .164-.986c.77.127 1.452.328 1.957.594C12.5 13 13 13.4 13 14c0 .426-.26.752-.544.977-.29.228-.68.413-1.116.558-.878.293-2.059.465-3.34.465s-2.462-.172-3.34-.465c-.436-.145-.826-.33-1.116-.558C3.26 14.752 3 14.426 3 14c0-.599.5-1 .961-1.243.505-.266 1.187-.467 1.957-.594a.5.5 0 0 1 .575.411"/>
             </svg>
-            <div class="d-flex flex-column w-100">
+            <div class="d-flex flex-column input-group">
               <h5 class="mb-2">Assigned List:</h5>
               <div class="table-responsive-sm">
                 <table class="table">
@@ -171,7 +167,7 @@
                       <% }); %>
                     <% } else { %>
                       <tr>
-                        <td colspan="4">No plot assigned</td>
+                        <td colspan="3">No plot assigned</td>
                       </tr>
                     <% } %>
                   </tbody>

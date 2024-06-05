@@ -233,15 +233,23 @@ Optionally, you can populate your database with sample data for testing purposes
     ('Bob', 'Brown', 'user2@example.com', '123456', false);
 
     -- Insert sample plots
-    INSERT INTO plots (plot_id, plot_location, plot_area, plot_size) VALUES
-    (1, 'A1', '50 sqm', 'small'),
-    (2, 'A2', '50 sqm', 'small'),
-    (3, 'A3', '50 sqm', 'small'),
-    (4, 'A4', '50 sqm', 'small'),
-    (5, 'B1', '100 sqm', 'medium'),
-    (6, 'B2', '100 sqm', 'medium'),
-    (7, 'C1', '150 sqm', 'large'),
-    (8, 'C2', '150 sqm', 'large');
+    INSERT INTO plots (plot_location, plot_area, plot_size) VALUES
+    ('A1', '50 sqm', 'small'),
+    ('A2', '50 sqm', 'small'),
+    ('A3', '50 sqm', 'small'),
+    ('A4', '50 sqm', 'small'),
+    ('B1', '100 sqm', 'medium'),
+    ('B2', '100 sqm', 'medium'),
+    ('C1', '150 sqm', 'large'),
+    ('C2', '150 sqm', 'large');
+
+    -- Insert sample assignments
+    INSERT INTO assignments (user_id, plot_id, assigned_date, status) VALUES
+    (3,	5, '2024-06-01 13:58:54.599891', 'Active'),
+    (4,	7, '2024-06-02 14:25:39.506596', 'Completed'),
+    (1,	1, '2024-06-03 14:25:39.506596', 'Active'),
+    (2,	2, '2024-06-04 14:25:39.506596', 'Active');
+
 
 ## Running the Application
 
