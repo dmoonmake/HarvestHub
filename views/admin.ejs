@@ -154,15 +154,20 @@ Workflow: Unassigned >> Pending >> Active >> Completed >> Unassigned OR Active
                               <form action="/create-assignment" method="POST">
                                 <input type="hidden" name="plot_location" value="<%= assign.plot_location%>">
                                 <input type="hidden" name="admin_email" value="<%= user.email%>">
-                                <div class="d-flex justify-content-between input-group"> 
-                                  <select name="user_id" class="form-select input-group">
+                                <div class="d-flex justify-content-between input-group">
+                                  <select id="userSelect_<%= assign.plot_location %>" name="user_id" class="form-select input-group">
+
+                                    <!-- Disable the assign button  -->
+                                    <% let hasOptions = false; %>
                                     <% waitings.forEach(function(waiting) { %>
-                                      <% if (waiting.plot_size === assign.plot_size) { %> 
+                                      <% if (waiting.plot_size === assign.plot_size) { %>
                                         <option value="<%= waiting.user_id %>"><%= waiting.first_name %> <%= waiting.last_name %></option>
+                                        <!-- Enable the assign button  -->
+                                        <% hasOptions = true; %>
                                       <% } %>
                                     <% }); %>
                                   </select>
-                                  <button type="submit" class="btn btn-primary btn-sm mt-1">Assign</button>
+                                  <button id="assignButton_<%= assign.plot_location %>" type="submit" class="btn btn-primary btn-sm mt-1" <%= hasOptions ? '' : 'disabled' %>>Assign</button>
                                 </div>
                               </form>
 
