@@ -6,7 +6,9 @@ HarvestHub is a web application for managing garden allotment waiting list and a
 
 - [Features](#features)
 - [Tech Stack](#tech-stack)
+- [Dependencies](#dependencies)
 - [Installation](#installation)
+- [Sample Data](#sample-data)
 - [Running the Application](#running-the-application)
 - [License](#license)
 
@@ -63,10 +65,9 @@ Create a database named HarvestHub.
     ```sh
     createdb harvesthub
 
-Create a user with the necessary privileges.
-Create a .env file in the project root and add the following environment variables:
-
 6. **Create a .env file in the project root and add the following environment variables**:
+Update the .env file with your DB user and password,
+
     ```sh
     DB_HOST=localhost
     DB_USER=your_db_user
@@ -75,7 +76,8 @@ Create a .env file in the project root and add the following environment variabl
     DB_PORT=5432
 
 7. **Set up the database schema**:
-Use the provided SQL script to set up the database schema. Open your PostgreSQL client, connect to the harvesthub database, and run the following script:
+Use the provided SQL script to set up the database schema. Open your PostgreSQL client, connect to the harvesthub database, and run the following script,
+
     ```sh
     -- PostgreSQL database schema setup for HarvestHub
 
@@ -222,8 +224,9 @@ Use the provided SQL script to set up the database schema. Open your PostgreSQL 
     END $$;
 
 
-8. **Sample Data**:
-Optionally, you can populate your database with sample data for testing purposes. Run the following SQL script:
+## Sample Data
+Optionally, you can populate your database with sample data for testing purposes. Run the following SQL script,
+
     ```sh
     -- Insert sample users
     INSERT INTO users (first_name, last_name, email, password, is_admin) VALUES
